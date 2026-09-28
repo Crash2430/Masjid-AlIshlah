@@ -1,25 +1,25 @@
 import React from 'react';
-import Navbar from '../components/Header/navbar';
 import Hero from '../components/Home/hero';
 import About from '../components/Home/about';
-import Programs from '../components/Home/programs';
-import Movement from '../components/Home/movement';
-import SchedulePoster from '../components/Home/scheduleposter';
-import Footer from '../components/Footer/footer';
+import Programs from '../components/Home/Programs';
+import Youtube from '../components/Home/Youtube';
+import Instagram from '../components/Home/Instagram';
+import SchedulePoster from '../components/Home/SchedulePoster';
+import Stats from '../components/Home/Stats';
+import Location from '../components/Home/Location';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-white font-sans antialiased text-gray-900 selection:bg-[#008282] selection:text-white">
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-        <Programs />
-        <Movement />
-        <SchedulePoster />
-      </main>
-      <Footer />
-    </div>
+    <main>
+      <Hero />
+      <Stats />
+      <About />
+      <Programs />
+      <Youtube />
+      <Instagram />
+      <SchedulePoster />
+      <Location/>
+    </main>
   );
 };
 

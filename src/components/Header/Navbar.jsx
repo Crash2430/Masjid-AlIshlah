@@ -1,43 +1,44 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router';
 import logomasjid from '../../assets/LogoMasjidPutih.png';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [isMounted, setIsMounted] = useState(false);
+  const location = useLocation();
 
   const navLinks = [
-    { name: 'Home', href: '#home', id: 'home' },
-    { name: 'Jadwal Sholat', href: '#jadwal-sholat', id: 'jadwal-sholat' },
-    { name: 'Jadwal Kajian', href: '#jadwal-kajian', id: 'jadwal-kajian' },
-    { name: 'Kepengurusan', href: '#kepengurusan', id: 'kepengurusan' },
-    { name: 'Kegiatan Masjid', href: '#kegiatan-masjid', id: 'kegiatan-masjid' },
-    { name: 'Artikel Islami', href: '#artikel-islami', id: 'artikel-islami' },
+    { name: 'Home', href: '/' },
+    { name: 'Jadwal Sholat', href: '/jadwal-sholat' },
+    { name: 'Jadwal Kajian', href: '/jadwal-kajian' },
+    { name: 'Kepengurusan', href: '/kepengurusan' },
+    { name: 'Kegiatan Masjid', href: '/kegiatan-masjid' },
+    { name: 'Artikel Islami', href: '/artikel-islami' },
   ];
 
   useEffect(() => {
+    // Delay singkat untuk memicu animasi masuk saat pertama kali dimuat
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 50);
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 40);
-      const scrollPosition = window.scrollY + 150;
-      navLinks.forEach((link) => {
-        const section = document.getElementById(link.id);
-        if (section) {
-          const top = section.offsetTop;
-          const height = section.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(link.id);
-          }
-        }
-      });
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out ${
+        isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      } ${
         isScrolled
           ? 'bg-[#008282] shadow-md py-3 backdrop-blur-md'
           : 'bg-transparent py-5'
@@ -46,10 +47,9 @@ const Navbar = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           
+          {/* Logo & Brand */}
           <div className="flex items-center gap-8 lg:gap-12">
-            
-            {/* Logo dan Tulisan  */}
-            <a href="#home" className="flex items-center gap-2.5 group">
+            <Link to="/" className="flex items-center gap-2.5 group">
               <img
                 src={logomasjid}
                 alt="Logo Masjid Al-Ishlah"
@@ -63,16 +63,16 @@ const Navbar = () => {
                   CILACAP
                 </span>
               </div>
-            </a>
-            
+            </Link>
+
+            {/* Navigasi Desktop */}
             <nav className="hidden xl:flex items-center gap-6">
               {navLinks.map((link) => {
-                const isActive = activeSection === link.id;
+                const isActive = location.pathname === link.href;
                 return (
-                  <a
+                  <Link
                     key={link.name}
-                    href={link.href}
-                    onClick={() => setActiveSection(link.id)}
+                    to={link.href}
                     className={`group relative text-[12px] tracking-wide whitespace-nowrap py-1.5 transition-colors duration-200 ${
                       isActive
                         ? 'font-bold text-white'
@@ -87,7 +87,7 @@ const Navbar = () => {
                           : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
                       }`}
                     />
-                  </a>
+                  </Link>
                 );
               })}
             </nav>
@@ -102,6 +102,8 @@ const Navbar = () => {
               Donasi
             </a>
           </div>
+
+          {/* Hamburger Menu (Mobile) */}
           <div className="xl:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -118,19 +120,16 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
           <div className="xl:hidden mt-4 bg-[#008282] rounded-xl p-4 shadow-xl border border-teal-600/40 space-y-2">
             {navLinks.map((link) => {
-              const isActive = activeSection === link.id;
+              const isActive = location.pathname === link.href;
               return (
-                <a
+                <Link
                   key={link.name}
-                  href={link.href}
-                  onClick={() => {
-                    setActiveSection(link.id);
-                    setIsMobileMenuOpen(false);
-                  }}
+                  to={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className={`block text-[12px] tracking-wide py-1.5 transition-colors duration-200 ${
                     isActive
                       ? 'font-bold text-white border-l-2 border-white pl-2'
@@ -138,7 +137,7 @@ const Navbar = () => {
                   }`}
                 >
                   {link.name}
-                </a>
+                </Link>
               );
             })}
             <a
